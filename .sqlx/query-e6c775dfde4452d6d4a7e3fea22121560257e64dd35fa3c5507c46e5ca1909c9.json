@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO MESSAGES\n                           (message_id, name, message)\n                            VALUES\n                            ($1, $2, $3)\n                            ON CONFLICT (message_id) DO NOTHING",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e6c775dfde4452d6d4a7e3fea22121560257e64dd35fa3c5507c46e5ca1909c9"
+}

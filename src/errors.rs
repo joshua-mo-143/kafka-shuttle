@@ -10,7 +10,7 @@ pub enum ApiError {
     #[error("De/serialization error: {0}")]
     SerdeJson(#[from] serde_json::Error),
     #[error("Oneshot message was canceled")]
-    CanceledMessage(#[from] futures_channel::oneshot::Canceled),
+    CanceledMessage(#[from] futures::channel::oneshot::Canceled),
 }
 
 impl<'a>

@@ -123,12 +123,9 @@ pub async fn kafka_consumer_task(con: StreamConsumer, db: sqlx::PgPool) {
         match con.recv().await {
             Err(e) => tracing::warn!("Kafka error: {}", e),
             Ok(m) => {
-                let payload = match m.payload() {
-                    Some(payload) => payload,
-                    None => {
-                        tracing::error!("Could not find a payload :(");
-                        continue;
-                    }
+                let Some(payload) = m.payload() else {
+                    tracing::error!("Could not find a payload :(");
+                    continue;
                 };
 
                 let message: KafkaMessage = match serde_json::from_slice(payload) {
@@ -146,9 +143,9 @@ pub async fn kafka_consumer_task(con: StreamConsumer, db: sqlx::PgPool) {
                     Action::Delete => queries::delete_message(message, &db).await,
                 }
 
-                if let Err(e) = con.store_offset_from_message(&m) {
-                    tracing::warn!("Error while storing offset: {}", e);
-                }
+                let _ = con
+                    .store_offset_from_message(&m)
+                    .inspect_err(|e| tracing::warn!("Error while storing offset: {}", e));
             }
         };
     }
